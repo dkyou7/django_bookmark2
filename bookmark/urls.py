@@ -5,5 +5,5 @@ from bookmark.views import BookmarkLV, BookmarkDV
 urlpatterns = [
     # route, view 필수 인자 2개, kwargs, name 선택 인자 2개
     path('',BookmarkLV.as_view(), name='index'),
-    path('/<int:pk>/',BookmarkDV.as_view(),name='detail'),
+    path('<int:pk>/',BookmarkDV.as_view(),name='detail'),
 ]

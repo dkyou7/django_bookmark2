@@ -251,3 +251,187 @@ class BookmarkDV(DetailView):
 - 장고의 전반적인 흐름을 이해하고, 다시한번 되짚어보는 좋은 계기가 되었다.
 
 - 설계부분을 어떻게 진행되는지 흐름을 알 수 있어서 좋았다.
+
+# Django_blog 
+
+- 이걸로 마무리 되는줄 알았는데 블로그 앱도 여기서 같이 개발한다고 한다.
+- 앱을 한 프로젝트에서 두개 이상 써본적은 첨이라 조금 기대된다.
+
+## 2.1 어플리케이션 설계
+
+- 1장에서와 마찬가지로 앱설계를 진행한다.
+
+## 2.2 개발 코딩하기 - 뼈대
+
+`python manage.py startapp blog`
+
+```python
+INSTALLED_APPS = [
+    ...
+    'bookmark',
+    'blog',
+]
+```
+
+## 2.3 개발 코딩하기 - 모델
+
+```python
+from django.db import models
+# URL 패턴을 만들어주는 장고 내장함수.
+from django.urls import reverse
+# Create your models here.
+
+class Post(models.Model):
+    # CharField : 한줄로 입력됨 , verbose_name : 컬럼에대한 별칭을 지정, max_length : 최대 길이 설정
+    title = models.CharField(verbose_name="TITLE", max_length=50)
+
+    # SlugField : 제목에 대한 별칭 , unique : 특정 포스트 검색 시 기본키 대신 사용 , allow_unicode : 한글 처리 ,
+    # help_text : 해당 컬럼을 설명해주는 문구로 폼 화면에서 나타남.
+    slug = models.SlugField("SLUG",unique=True,allow_unicode=True,help_text='one word for title alias.')
+    description = models.CharField("DESCRIPTION",max_length=100, blank=True,help_text='simple description text')
+
+    # TextField : 여러줄 입력 가능
+    content = models.TextField("CONTENT")
+
+    # auto_now_add : 객체 생성될 떄의 시각을 자동으로 기록
+    create_dt = models.DateTimeField("CREATE DATE", auto_now_add=True)
+
+    # auto_now : 객체가 변동될 때의 시각을 자동으로 기록
+    modifiy_dt = models.DateTimeField("MODIFY DATE", auto_now=True)
+
+    # 필드 속성 외에 필요한 파라메터가 있으면, Meta 내부 클래스로 정의한다.
+    class Meta:
+        # 테이블의 단수 별칭
+        verbose_name = 'post'
+        # 테이블의 복수 별칭
+        verbose_name_plural = 'posts'
+        # DB에 저장되는 테이블의 이름
+        db_table = 'blog_posts'
+        # 모델 객체 리스트 출력 시 기준이 되는 것.
+        ordering = ['-modify_dt','-create_dt']
+
+    def __str__(self):
+        return self.title
+
+    # 이 메소드가 정의된 객체를 지칭하는 URL을 반환.
+    def get_absolute_url(self):
+        return reverse('blog:post_detail',args=(self.slug,))
+
+    def get_previous(self):
+        return self.get_previous_by_modify_dt()
+
+    def get_next(self):
+        return self.get_next_by_modify_dt()
+```
+
+```python
+# blog/admin.py
+
+from django.contrib import admin
+from blog.models import Post
+
+# Register your models here.
+@admin.register(Post) # 데코레이터를 사용해서 간단해졌다.
+class PostAdmin(admin.ModelAdmin):  # 어드민에서 Post클래스가 어떻게 보일까
+    list_display = ['id','title','modify_dt']   # 출력할 것
+    list_filter = ['modify_dt'] # 필터 사이드바
+    search_fields = ['title','content'] # 검색 박스
+    prepopulated_fields = {'slug':['title',]}   
+    # slug 필드는 title 필드를 사용해 미리 채워두기
+```
+
+```bash
+$ python manage.py makemigrations blog
+$ python manage.py migrate
+```
+
+## 2.4 개발 코딩하기 - URLconf
+
+```python
+from django.urls import path, re_path
+# 뷰 클래스가 많을 때는 이렇게 뷰 모듈 자체를 임포트한다.
+from blog import views
+
+
+app_name = 'blog'
+
+urlpatterns = [
+    # route, view 필수 인자 2개, kwargs, name 선택 인자 2개
+
+    # /blog/
+    path('',views.PostLV.as_view(), name='index'),
+    # /blog/post/
+    path('post/',views.PostLV.as_view(),name='post_list'),
+    # /blog/post/django-example/
+    # 한글 포함 슬러그 처리를 위해.
+    re_path(r'^post/(?P<slug>[-\w]+)/$',views.PostDV.as_view(),name='post_detail'),
+    # /blog/archive/
+    path('archive/',views.PostAV.as_view(),name='post_archive'),
+    # /blog/archive/2020/
+    path('archive/<int:year>/',views.PostYAV.as_view(),name='post_year_archive'),
+    # /blog/archive/2020/nov/
+    path('archive/<int:year>/<str:month>/',views.PostMAV.as_view(),name='post_month_archive'),
+    # /blog/archive/2020/nov/10/
+    path('archive/<int:year>/<str:month>/<int:day>/',views.PostDAV,name='post_day_archive'),
+    # /blog/archive/today/
+    path('archive/today/',views.PostTAV.as_view(),name='post_today_archive')
+    
+]
+```
+
+## 2.5. 개발 코딩하기 - 뷰
+
+```python
+from django.shortcuts import render
+
+# 클래스형 제네럴 뷰 임포트
+from django.views.generic import ListView,DetailView
+from django.views.generic.dates import ArchiveIndexView,YearArchiveView,MonthArchiveView
+from django.views.generic.dates import DayArchiveView,TodayArchiveView
+
+from blog.models import Post    # 테이블 조회를 위한 임포트
+
+# Create your views here.
+
+#-- ListView
+class PostLV(ListView):
+    model = Post    # 대상 테이블 정의
+
+    # default : blog/post_list.html
+    template_name = 'blog/post_all.html'
+
+    # 템플릿으로 넘겨주는 객체 리스트에 대한 컨텍스트 변수명 지정.
+    context_object_name = 'posts'
+    paginate_by = 2
+
+#-- DetailView
+class PostDV(DetailView):
+    model = Post
+
+#-- ArchiveView
+# 테이블로부터 객체 리스트를 가져와, 날짜 필드 기준으로 최신 객체 먼저 출력한다.
+class PostAV(ArchiveIndexView):
+    model = Post
+    date_field = 'modify_dt'
+
+# 테이블로부터 날짜 필드의 연도를 기준으로 객체 리스트를 가져와 그 객체들이 속한 월을 리스트로 출력.
+# 날짜 필드의 연도 파라미터는 URLconf에서 추출해 뷰로 넘겨줍니다.
+class PostYAV(YearArchiveView):
+    model = Post
+    date_field = 'modify_dt'
+    # 해당 연도에 해당하는 객체의 리스트를 만들어서 템플릿에 넘겨준다.
+    # 템플릿 파일에서 object_list 컨텍스트 변수를 사용할 수 있다. default : false
+    make_object_list = True
+class PostMAV(MonthArchiveView):
+    model = Post
+    date_field = 'modify_dt'
+class PostDAV(DayArchiveView):
+    model = Post
+    date_field = 'modify_dt'
+class PostTAV(TodayArchiveView):
+    model = Post
+    date_field = 'modify_dt'
+```
+
+## 2.6 개발 코딩하기 - 템플릿
+
