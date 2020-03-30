@@ -18,11 +18,12 @@ class PostLV(ListView):
 
     # 템플릿으로 넘겨주는 객체 리스트에 대한 컨텍스트 변수명 지정.
     context_object_name = 'posts'
-    paginate_by = 2
+    paginate_by = 3
 
 #-- DetailView
 class PostDV(DetailView):
     model = Post
+    template_name = 'blog/post_detail.html'
 
 #-- ArchiveView
 # 테이블로부터 객체 리스트를 가져와, 날짜 필드 기준으로 최신 객체 먼저 출력한다.
