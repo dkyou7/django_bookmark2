@@ -4,6 +4,9 @@
 
 - 다른 책으로 연습해보는 북마크
 - 프로젝트 시작 전 연습하기 좋을 듯.
+- 프로젝트 깃에 올릴 시 주의사항
+  - 패키지 설치했다면 ? `pip freeze > requirement.txt`로 패키지 등록해놓기
+  - 그래야 임포트 시 ` pip install -r requirements.txt`로 같은 가상환경 구축이 가능하다.
 
 ## 1.1 어플리케이션 설계
 
@@ -153,9 +156,98 @@ class BookmarkAdmin(admin.ModelAdmin):
 
 ## 1.4 개발 코딩하기 - URLconf
 
+- 프로젝트 URL 과 앱 URL 을 구분하여 파일을 작성하자.
+
+```python
+from django.contrib import admin
+from django.urls import path, include
+# config > urls.py
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('bookmark/',include('bookmark.urls'))
+]
+```
+
+```python
+from django.urls import path
+# from bookmark.views import * 대신에 하나씩 불러와서 충돌을 방지한다.
+from bookmark.views import BookmarkLV, BookmarkDV
+# bookmark > urls.py
+urlpatterns = [
+    # route, view 필수 인자 2개, kwargs, name 선택 인자 2개
+    path('',BookmarkLV.as_view(), name='index'),
+    path('bookmark/<int:pk>/',BookmarkDV.as_view(),name='detail'),
+]
+```
+
 ## 1.5 개발 코딩하기 - 뷰
+
+- ListView : Bookmark 테이블에서 여러개의 레코드를 가져오는 로직 필요
+- DetailView : Bookmark 테이블에서 한개의 레코드를 가져오는 로직 필요
+
+```python
+# 클래스형 제네릭 뷰를 사용하기 위해서
+from django.views.generic import  ListView, DetailView
+# 테이블 조회를 위해서 모델 클래스를 임포트 한다.
+from bookmark.models import Bookmark
+
+# Create your views here.
+class BookmarkLV(ListView):
+    model = Bookmark
+
+class BookmarkDV(DetailView):
+    model = Bookmark
+```
 
 ## 1.6 개발 코딩하기 - 템플릿
 
+```html
+<!-- bookmark/templates/bookmark/bookmark_list.html -->
 
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="content">
+        <h1>Bookmark List</h1>
 
+        <ul>
+            {% for bookmark in object_list %}
+            <li><a href="{% url 'detail' bookmark.id%}">{{bookmark}}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
+```
+
+```html
+<!-- bookmark/templates/bookmark/bookmark_detail.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Detail</title>
+</head>
+<body>
+    <div id="content">
+        <h1>{{object.title}}</h1>
+
+        <ul>
+            <li>url : <a href="{{object.url}}">{{object.url}}</a></li>
+        </ul>
+    </div>
+</body>
+</html>
+```
+
+## 결론
+
+- 간단하게 북마크 시스템을 개발해보는 좋은 계기가 되었다.
+- 장고의 전반적인 흐름을 이해하고, 다시한번 되짚어보는 좋은 계기가 되었다.
+
+- 설계부분을 어떻게 진행되는지 흐름을 알 수 있어서 좋았다.
