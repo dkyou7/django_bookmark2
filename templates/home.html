@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} home.html{% endblock %}
+
+{% block extra-style %}
+<style type="text/css">
+    .home-image{
+        background-image: url("{% static 'img/header.jpg' %}");
+        background-repeat : no-repeat;
+        background-position: center;
+        background-size: 100%;
+        height: 500px;
+        border-top: 10px solid #ccc;
+        border-bottom: 10px solid #ccc;
+        padding: 20px 0 0 20px;
+    }
+    .title{
+        color: #c80;
+        font-weight: bold;
+     }
+    .powered{
+        position: relative;
+        top: 77%;
+        color: #cc0;
+        font-style: italic;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="home-image">
+        <h2 class="title">Django - Python Web Programming</h2>
+        <h4 class="powered"><i class="fas fa-arrow-circle-right"></i> powered by django and bootstrap.</h4>
+    </div>
+
+    <div class="row text-center">
+        <div class="col-sm-6">
+            <h3>Bookmark App</h3>
+            <p>이상 끓는 풀밭에 이상이 황금시대의 사라지지 얼마나 피는 그리하였는가? 구할 맺어, 하는 피에 갑 끓는다. 같은 붙잡아 할지라도 밝은 우리의 가슴이 그리하였는가? 그러므로 노래하며 보는 그들은 천하를 착목한는 할지라도 가슴이 내려온 교향악이다. 할지라도 구하지 눈이 끓는 어디 피고 심장의 피다. 불러 밥을 무엇을 못하다 황금시대다.</p>
+        </div>
+        <div class="col-sm-6">
+            <h3>Blog App</h3>
+            <p>하는 그것을 목숨이 같이, 칼이다. 끓는 군영과 그들의 듣는다. 인도하겠다는 어디 불어 피부가 찾아 예가 봄바람이다. 원질이 봄날의 피부가 하는 이것을 청춘이 행복스럽고 청춘의 있으랴? 불어 소리다.이것은 할지라도 용기가 이성은 일월과 것이다.보라, 황금시대를 있으랴? 그들은 청춘은 곳이 그러므로 공자는 동력은 운다.</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <footer class="fixed-bottom bg-info">
+        <div class="text-white font-italic text-right mr-5">Copyright &copy; 2020 DjangoBook by dkyou</div>
+    </footer>
+{% endblock %}

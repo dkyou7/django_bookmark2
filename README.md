@@ -7,6 +7,17 @@
 - 프로젝트 깃에 올릴 시 주의사항
   - 패키지 설치했다면 ? `pip freeze > requirement.txt`로 패키지 등록해놓기
   - 그래야 임포트 시 ` pip install -r requirements.txt`로 같은 가상환경 구축이 가능하다.
+- 다음과 같은 작은 조각들을 계속 모은다.
+
+```
+# 3. 프로젝트 첫 페이지 만들기
+## 3.1 어플리케이션 설계
+## 3.2 개발 코딩하기 - 뼈대
+## 3.3 개발 코딩하기 - 모델
+## 3.4 개발 코딩하기 - URLconf
+## 3.5 개발 코딩하기 - 뷰
+## 3.6 개발 코딩하기 - 템플릿
+```
 
 ## 1.1 어플리케이션 설계
 
@@ -100,7 +111,10 @@ TIME_ZONE = 'Asia/Seoul'
 
 ...
 # DB에 저장되는 시간이 한국 시간으로 저장된다.
-USE_TZ = False
+# USE_TZ = False
+
+# 20/03/31기준
+USE_TZ = True # 로 설정하게 됬음. 한글 설정 에러가 나기 때문에...ㅠㅠ 아직 해결책 못찾음
 ```
 
 ```python
@@ -434,4 +448,82 @@ class PostTAV(TodayArchiveView):
 ```
 
 ## 2.6 개발 코딩하기 - 템플릿
+
+- Git repository 에 다 올려놓았음. 
+
+# 3. 프로젝트 첫 페이지 만들기
+
+## 3.1 어플리케이션 설계
+
+1. UI 설계
+2. 테이블 설계
+   - 테이블 변경사항 없음
+3. URL 설계
+   - 루트 URL 을 추가하자
+4. 로직 설계
+   - 루트에서 각 앱으로 이동하는 네비게이션을 만들자.
+5. 작업/코딩 순서
+   - 
+
+## 3.2 개발 코딩하기 - 뼈대
+
+- 앱을 신규로 만드는 것이 아니기 때문에 뼈대작업이 필요 없다.
+
+## 3.3 개발 코딩하기 - 모델
+
+- 테이블에 대한 변동사항은 없다.
+
+## 3.4 개발 코딩하기 - URLconf
+
+1. config - urls.py 코딩
+
+```python
+from django.contrib import admin
+from django.urls import path, include
+from config.views import HomeView   # 추가
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('bookmark/',include('bookmark.urls')),
+    path('blog/',include('blog.urls')),
+    path('',HomeView.as_view(),name='home'),    # 추가
+]
+```
+
+## 3.5 개발 코딩하기 - 뷰
+
+- 템플릿 뷰를 임포트해서 사용한다.
+
+```python
+from django.views.generic import TemplateView
+
+#-- TemplateView
+class HomeView(TemplateView):
+    # template_name : 필수 오버라이딩이다.
+    # 템플릿 위치 디렉토리는 settings.py의
+    # 'DIRS': [os.path.join(BASE_DIR,"templates")] 로 지정되어있다.
+    template_name = 'home.html'
+```
+
+## 3.6 개발 코딩하기 - 템플릿
+
+- 신기하게 base.html, home.html 로 나누어서 코딩한다.
+
+  - 근본 : base.html
+  - 첫 페이지 : home.html
+
+  로 구분한다.
+
+- templates/base.html
+  - 부트스트랩 설정
+  - 골격 설정
+  - 폰트어썸 설정
+
+- templates/home.html
+
+  - {% extends 'base.html' %}
+  - {% load static %}
+  - {% static 'img/header.jpg' %}
+
+  
 
