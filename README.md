@@ -1,6 +1,6 @@
 [toc]
 
-# Django_bookmark 2
+# 1. Django_bookmark 2
 
 - 다른 책으로 연습해보는 북마크
 - 프로젝트 시작 전 연습하기 좋을 듯.
@@ -266,7 +266,7 @@ class BookmarkDV(DetailView):
 
 - 설계부분을 어떻게 진행되는지 흐름을 알 수 있어서 좋았다.
 
-# Django_blog 
+# 2. Django_blog 
 
 - 이걸로 마무리 되는줄 알았는데 블로그 앱도 여기서 같이 개발한다고 한다.
 - 앱을 한 프로젝트에서 두개 이상 써본적은 첨이라 조금 기대된다.
@@ -520,10 +520,34 @@ class HomeView(TemplateView):
   - 폰트어썸 설정
 
 - templates/home.html
-
   - {% extends 'base.html' %}
   - {% load static %}
   - {% static 'img/header.jpg' %}
 
-  
+# 4. 기존 앱 개선하기 - Bookmark, Blog
+## 4.1 어플리케이션 설계
+
+1. 화면 UI 설계
+
+- home.html 에서 각각의 앱으로 이동할 수 있도록 개선하자.
+
+## 4.2 개발 코딩하기 - 뼈대
+
+없음.
+
+## 4.3 개발 코딩하기 - 모델
+
+없음.
+
+## 4.4 개발 코딩하기 - URLconf
+
+없음.
+
+## 4.5 개발 코딩하기 - 뷰
+
+없음.
+
+## 4.6 개발 코딩하기 - 템플릿
+
+- 각각 상속 템플릿으로 변환 후 연결할 예정이다.
 

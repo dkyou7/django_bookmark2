@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Detail</title>
-</head>
-<body>
-    <div id="content">
+{% extends 'base.html' %}
+
+{% block title %}Bookmark_Detail.html{% endblock %}
+
+{% block content %}
+    <div id="content" style="padding-top:50px;">
         <h1>{{object.title}}</h1>
 
         <ul>
-            <li>url : <a href="{{object.url}}">{{object.url}}</a></li>
+            <li>url : <a href="{{object.url}}" target="_blank">{{object.url}}</a></li>
         </ul>
     </div>
-</body>
-</html>
+{% endblock %}
