@@ -1,6 +1,7 @@
 from django.db import models
 # URL 패턴을 만들어주는 장고 내장함수.
 from django.urls import reverse
+
 # Create your models here.
 
 class Post(models.Model):
@@ -20,6 +21,9 @@ class Post(models.Model):
 
     # auto_now : 객체가 변동될 때의 시각을 자동으로 기록
     modify_dt = models.DateTimeField("MODIFY DATE", auto_now=True)
+
+    from taggit.managers import TaggableManager
+    tags = TaggableManager(blank=True)
 
     # 필드 속성 외에 필요한 파라메터가 있으면, Meta 내부 클래스로 정의한다.
     class Meta:

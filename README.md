@@ -551,3 +551,203 @@ class HomeView(TemplateView):
 
 - 각각 상속 템플릿으로 변환 후 연결할 예정이다.
 
+# 5. Blog 앱 확장 - Tag 달기
+## 5.1 어플리케이션 설계
+
+1. 화면 설계
+   - 태그 관련 두개 화면 신규 추가
+   - 기존 상세 화면 수정
+2. 테이블 설계
+   - 태그 기능을 위한 필드 추가
+3. URL 설계
+   - 태그 관련 URL 추가
+     - 태그 클라우드를 보기 위한 URL
+     - 특정 태그가 달려 있는 포스트들의 리스트를 보여주는 URL
+
+## 5.2 개발 코딩하기 - 뼈대
+
+1. 태그잇 오픈소스 활용하기
+
+```bash
+pip install django-taggit
+pip install django-taggit-templatetags
+```
+
+```python
+INSTALLED_APPS = [
+    ...
+    'taggit',   # 추가
+    'taggit_templatetags2', # 추가
+]
+```
+
+```python
+...
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
+TAGGIT_CASE_INSENSITIVE = True  # 추가
+
+TAGGIT_LIMIT = 50   # 추가
+```
+
+## 5.3 개발 코딩하기 - 모델
+
+1. 모델 추가
+
+```python
+# blog/models.py
+
+from taggit.managers import TaggableManager
+tags = TaggableManager(blank=True)
+```
+
+```python
+# blog/admin.py
+
+from django.contrib import admin
+from blog.models import Post
+
+# Register your models here.
+@admin.register(Post) # 데코레이터를 사용
+class PostAdmin(admin.ModelAdmin):  # 어드민에서 Post클래스가 어떻게 보일까
+    list_display = ['id','title','modify_dt', 'tag_list']   # 출력할 것, tag_list 추가
+    list_filter = ['modify_dt'] # 필터 사이드바
+    search_fields = ['title','content'] # 검색 박스
+    prepopulated_fields = {'slug':['title',]}   # slug 필드는 title 필드를 사용해 미리 채워두기
+    # 두 메서드 추가.
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related('tags')
+
+    def tag_list(self,obj):
+        return ', '.join(o.name for o in obj.tags.all())
+```
+
+2. 모델 추가되었으니 DB migrate 가 필요하다.
+
+```bash
+python manage.py makemigrations blog
+python manage.py migrate
+```
+
+## 5.4 개발 코딩하기 - URLconf
+
+```python
+# /blog/tag/
+path('tag/',views.TagCloudTV.as_view(),name='tag_cloud'),
+# /blog/tag/tagname/
+path('tag/<str:tag>/',views.TaggedObjectLV.as_view(),name='tagged_object_list'),a
+```
+
+## 5.5 개발 코딩하기 - 뷰
+
+```python
+class TagCloudTV(TemplateView):
+    template_name = 'taggit/taggit_cloud.html'
+class TaggedObjectLV(ListView):
+    template_name = 'taggit/taggit_post_list.html'
+    model = Post
+
+    def get_queryset(self):
+        return Post.objects.filter(tags_name=self.kwargs.get('tag'))
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tagname'] = self.kwargs['tag']
+        return context
+```
+
+## 5.6 개발 코딩하기 - 템플릿
+
+- 
+
+# 6. Blog 앱 확장 - 댓글 기능
+## 6.1 어플리케이션 설계
+## 6.2 개발 코딩하기 - 뼈대
+## 6.3 개발 코딩하기 - 모델
+## 6.4 개발 코딩하기 - URLconf
+## 6.5 개발 코딩하기 - 뷰
+## 6.6 개발 코딩하기 - 템플릿
+
+# 7. Blog 앱 확장 - 검색 기능
+
+- Q-객체 활용한 검색 단어가 있는 블로그를 찾고, 그 결과를 보여주는 기능 개발해보기
+
+## 7.1 어플리케이션 설계
+
+1. 화면 설계
+   - 블로그 글에 대한 검색기능 구현해보기
+   - 검색 폼과 검색 결과를 같은 페이지에 보여줘보자
+2. 테이블 설계
+   - 없음
+3. URL 설계
+   - 검색 폼 처리를 위한 URL 넣기
+
+## 7.2 개발 코딩하기 - 뼈대
+
+- 없음
+
+## 7.3 개발 코딩하기 - 모델
+
+- 없음
+
+## 7.4 개발 코딩하기 - URLconf
+
+```python
+# blog/urls.py
+
+# /blog/search/
+path('search/',views.SearchFormView.as_view(),name='search'),
+```
+
+## 7.5 개발 코딩하기 - 뷰
+
+``` python
+from django.views.generic import FormView
+from blog.forms import PostSearchForm
+from django.db.models import Q
+from django.shortcuts import render
+
+#-- FormView
+class SearchFormView(FormView):
+    form_class = PostSearchForm
+    template_name = 'blog/post_search.html'
+
+    def form_valid(self, form):
+        searchWord = form.cleaned_data['search_word']
+        post_list = Post.objects.filter(Q(title__icontains=searchWord) | Q(description__icontains=searchWord) | Q(content_icontains=searchWord)).distict()
+        context = {}
+        context['form'] = form
+        context['search_term'] = searchWord
+        context['object_list'] = post_list
+
+        return render(self.request,self.template_name,context)
+```
+
+## 7.6 개발 코딩하기 - 템플릿
+
+```python
+{% extends 'base.html' %}
+
+{% block title %}Post_search.html{% endblock %}
+
+{% block content %}
+    <h1>Blog Search</h1>
+
+    <form action="." method="post">{% csrf_token %}
+        {{form.as_table}}
+        <input type="submit" value="Submit" class="btn btn-primary btn-sm">
+    </form>
+    {% if object_list %}
+        {% for post in object_list %}
+            <h2><a href="{{post.get_absolute_url}}">{{post.title}}</a></h2>
+            {{post.modify_date|date:"N d, Y"}}
+            <p>post.description}}</p>
+        {% endfor %}
+    {% elif search_term %}
+        <b><i>Search Word({{search_term}}) Not Found !</i></b>
+    {% endif %}
+{% endblock %}
+```
+
+- 기능 동작이 안된다.. 일단 계속 진행해보자.
+
