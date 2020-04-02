@@ -8,7 +8,7 @@ urlpatterns = [
     # /photo/album/
     path('album/',views.AlbumLV.as_view(),name='album_list'),
     # /photo/album/99
-    path('album/<int:pk>/',views.AlbuDV.as_view(),name='album_detail'),
+    path('album/<int:pk>/',views.AlbumDV.as_view(),name='album_detail'),
     # /photo/photo/99
     path('photo/<int:pk>/',views.PhotoDV.as_view(),name='photo_detail'),
 ]

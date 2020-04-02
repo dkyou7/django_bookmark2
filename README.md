@@ -848,3 +848,6 @@ class PhotoDV(DetailView):
 
 ## 8.6 개발 코딩하기 - 템플릿
 
+- photo/album_detail.html
+- photo/album_list.html
+- Photo/photo_detail.html
