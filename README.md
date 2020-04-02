@@ -788,14 +788,63 @@ INSTALLED_APPS = [
 - Photo/admin.py
 - photo/fields.py
 
-```python
+```bash
 python manage.py makemigrations photo
 python manage.py migrate
 ```
 
-
-
 ## 8.4 개발 코딩하기 - URLconf
+
+```python 
+from django.contrib import admin
+from django.urls import path, include
+from config.views import HomeView   
+from django.conf.urls.static import static  # 추가
+from django.conf import settings    # 추가
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('bookmark/',include('bookmark.urls')),
+    path('blog/',include('blog.urls')),
+    path('',HomeView.as_view(),name='home'),
+    path('photo/',include('photo.urls')),	# 추가
+] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT) # 추가
+```
+
+```python
+from django.urls import path
+from photo import views
+
+app_name = 'photo'
+urlpatterns = [
+    # /photo/
+    path('',views.AlbumLV.as_view(),name='index'),
+    # /photo/album/
+    path('album/',views.AlbumLV.as_view(),name='album_list'),
+    # /photo/album/99
+    path('album/<int:pk>/',views.AlbuDV.as_view(),name='album_detail'),
+    # /photo/photo/99
+    path('photo/<int:pk>/',views.PhotoDV.as_view(),name='photo_detail'),
+]
+```
+
 ## 8.5 개발 코딩하기 - 뷰
+
+```python
+from django.shortcuts import render
+from django.views.generic import ListView, DetailView
+from photo.models import Album,Photo
+
+# Create your views here.
+class AlbumLV(ListView):
+    model = Album
+
+class AlbumDV(DetailView):
+    model = Album
+    
+class PhotoDV(DetailView):
+    model = Photo
+```
+
 ## 8.6 개발 코딩하기 - 템플릿
 
