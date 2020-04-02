@@ -764,9 +764,38 @@ class SearchFormView(FormView):
 
 ## 8.2 개발 코딩하기 - 뼈대
 
+```bash
+python manage.py startapp photo
+```
 
+```python
+INSTALLED_APPS = [
+    ...
+    'photo',    # 추가
+]
+```
 
 ## 8.3 개발 코딩하기 - 모델
+
+- 엘범, 포토 두개의 모델이 필요하다.
+- 포토
+  - 사진에 대한 정보를 담는다.
+- 엘범
+  - 같은 주제의 사진들을 모으는 역할을 한다.
+
+- photo/models.py
+
+- Photo/admin.py
+- photo/fields.py
+
+```python
+python manage.py makemigrations photo
+python manage.py migrate
+```
+
+
+
 ## 8.4 개발 코딩하기 - URLconf
 ## 8.5 개발 코딩하기 - 뷰
 ## 8.6 개발 코딩하기 - 템플릿
+

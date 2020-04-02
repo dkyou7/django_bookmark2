@@ -39,8 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bookmark',
     'blog',
-    'taggit',   # 추가
-    'taggit_templatetags2', # 추가
+    'taggit',
+    'taggit_templatetags2',
+    'photo',    # 추가
 ]
 
 MIDDLEWARE = [
