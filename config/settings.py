@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'blog',
     'taggit',
     'taggit_templatetags2',
-    'photo',    # 추가
+    'photo',
+    'widget_tweaks' # 추가
 ]
 
 MIDDLEWARE = [
@@ -131,6 +132,8 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 
-TAGGIT_CASE_INSENSITIVE = True  # 추가
+LOGIN_REDIRECT_URL = '/'    # 추가
 
-TAGGIT_LIMIT = 50   # 추가
+TAGGIT_CASE_INSENSITIVE = True
+
+TAGGIT_LIMIT = 50

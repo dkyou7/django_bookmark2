@@ -851,3 +851,44 @@ class PhotoDV(DetailView):
 - photo/album_detail.html
 - photo/album_list.html
 - Photo/photo_detail.html
+
+# 9. 실전 프로그램 개발 - 인증기능
+## 9.1 어플리케이션 설계
+
+1. 화면 UI 설계
+   - 로그인,로그아웃, 가입, 비밀번호 변경 화면 구성하기
+2. 테이블 설계
+   - User 테이블 사용
+3. URL 설계 - 장고 기본 기능 사용
+
+
+
+## 9.2 개발 코딩하기 - 뼈대
+
+```python
+# config/settings.py
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+
+LOGIN_REDIRECT_URL = '/'    # 추가
+```
+
+```
+pip install django-widget-tweaks
+```
+
+```python
+INSTALLED_APPS = [
+    ...
+    'widget_tweaks' # 추가
+]
+```
+
+
+
+## 9.3 개발 코딩하기 - 모델
+## 9.4 개발 코딩하기 - URLconf
+## 9.5 개발 코딩하기 - 뷰
+## 9.6 개발 코딩하기 - 템플릿
