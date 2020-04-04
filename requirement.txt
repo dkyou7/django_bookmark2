@@ -2,6 +2,7 @@ Django==2.1.5
 django-classy-tags==1.0.0
 django-taggit==1.2.0
 django-taggit-templatetags2==1.6.1
+django-widget-tweaks==1.4.8
 include==0.2.2
 Pillow==7.1.1
 pytz==2019.3
