@@ -3,8 +3,6 @@ from django.db import models
 from django.urls import reverse
 
 # Create your models here.
-from django.utils.text import slugify
-
 
 class Post(models.Model):
     # CharField : 한줄로 입력됨 , verbose_name : 컬럼에대한 별칭을 지정, max_length : 최대 길이 설정
@@ -26,9 +24,6 @@ class Post(models.Model):
 
     from taggit.managers import TaggableManager
     tags = TaggableManager(blank=True)
-
-    from django.contrib.auth.models import User
-    owner = models.ForeignKey(User,on_delete=models.CASCADE,verbose_name='OWNER',blank=True,null=True)
 
     # 필드 속성 외에 필요한 파라메터가 있으면, Meta 내부 클래스로 정의한다.
     class Meta:
@@ -53,7 +48,3 @@ class Post(models.Model):
 
     def get_next(self):
         return self.get_next_by_modify_dt()
-
-    def save(self,*args,**kwargs):
-        self.slug = slugify(self.title, allow_unicode=True)
-        super().save(*args,**kwargs)
